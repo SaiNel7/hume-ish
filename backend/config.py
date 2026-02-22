@@ -3,11 +3,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ANTHROPIC_API_KEY: str = os.environ["ANTHROPIC_API_KEY"]
-ELEVENLABS_API_KEY: str = os.environ["ELEVENLABS_API_KEY"]
+# Required for ingestion (phase 1)
 OPENAI_API_KEY: str = os.environ["OPENAI_API_KEY"]
 CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
-PADDY_VOICE_ID: str = os.environ["PADDY_VOICE_ID"]
+
+# Required for LLM (phase 2) — validated at call time, not import time
+ANTHROPIC_API_KEY: str | None = os.getenv("ANTHROPIC_API_KEY")
+
+# Required for voice (phase 3) — validated at call time, not import time
+ELEVENLABS_API_KEY: str | None = os.getenv("ELEVENLABS_API_KEY")
+PADDY_VOICE_ID: str | None = os.getenv("PADDY_VOICE_ID")
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 LLM_MODEL = "claude-sonnet-4-6"
