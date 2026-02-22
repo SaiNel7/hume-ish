@@ -1,0 +1,26 @@
+# Environment
+.env
+
+# Vector DB persistence
+chroma_db/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+dist/
+*.egg-info/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# uv
+.python-version
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
