@@ -22,4 +22,11 @@ CHUNK_SIZE = 512       # tokens
 CHUNK_OVERLAP = 64     # tokens
 TOP_K_RETRIEVE = 20    # chunks to retrieve before reranking
 TOP_K_RERANK = 5       # chunks passed to LLM after reranking
-MAX_HISTORY_TURNS = 20 # messages kept in session (10 exchanges)
+MAX_HISTORY_TURNS = 20  # messages kept in session (10 exchanges)
+
+# Server
+# Comma-separated list of allowed frontend origins (no trailing slash)
+ALLOWED_ORIGINS: list[str] = os.getenv(
+    "ALLOWED_ORIGINS", "http://localhost:5173"
+).split(",")
+MAX_AUDIO_BYTES: int = 10 * 1024 * 1024  # 10 MB — plenty for a short voice clip

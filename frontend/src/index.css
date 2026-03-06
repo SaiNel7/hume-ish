@@ -1,0 +1,30 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:           #F5F0E8;   /* egg white */
+  --surface:      #FFFFFF;
+  --surface-alt:  #ECE7DC;   /* slightly darker egg white for user bubbles */
+  --text-primary: #1A1A1A;
+  --text-muted:   #8A8070;
+  --border:       #DDD8CE;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Georgia', serif;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+  max-width: 600px;
+  padding: 3rem 1.25rem;
+}
