@@ -24,3 +24,5 @@ dist/
 # IDE
 .vscode/
 .idea/
+frontend/node_modules/
+frontend/.env
