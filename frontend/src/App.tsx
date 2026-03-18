@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
 import { Toaster, toast } from 'react-hot-toast'
 import { sendVoiceMessage } from './api/chat'
-import VoiceOrb, { type OrbState } from './components/VoiceOrb'
+import { AIVoiceInput } from './components/ui/ai-voice-input'
+import { SparklesCore } from './components/ui/sparkles'
+import { GradientText } from './components/ui/gradient-text'
 import { useVoiceRecorder } from './hooks/useVoiceRecorder'
 import './App.css'
 
@@ -10,72 +12,87 @@ interface Turn {
   text: string
 }
 
+type AppState = 'idle' | 'recording' | 'thinking' | 'speaking'
+
 export default function App() {
-  const [orbState, setOrbState] = useState<OrbState>('idle')
+  const [appState, setAppState] = useState<AppState>('idle')
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [turns, setTurns] = useState<Turn[]>([])
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const audioUrlRef = useRef<string | null>(null)
   const recorder = useVoiceRecorder()
+  const isRecording = useRef(false)
 
-  const handleOrbClick = async () => {
-    // ── Start recording ──────────────────────────────────────────────────
-    if (orbState === 'idle') {
-      try {
-        await recorder.start()
-        setOrbState('recording')
-      } catch {
-        // NotAllowedError — user denied mic
-        toast.error('Microphone access denied. Allow it in your browser settings.')
-      }
-      return
+  const handleStart = async () => {
+    if (appState !== 'idle') return
+    try {
+      await recorder.start()
+      isRecording.current = true
+      setAppState('recording')
+    } catch {
+      toast.error('Microphone access denied. Allow it in your browser settings.')
     }
+  }
 
-    // ── Stop recording → process ─────────────────────────────────────────
-    if (orbState === 'recording') {
-      setOrbState('thinking')
-      const blob = await recorder.stop()
+  const handleStop = async (_duration: number) => {
+    if (!isRecording.current) return
+    isRecording.current = false
+    setAppState('thinking')
 
-      try {
-        const result = await sendVoiceMessage(blob, sessionId)
+    const blob = await recorder.stop()
 
-        setSessionId(result.sessionId)
+    try {
+      const result = await sendVoiceMessage(blob, sessionId)
 
-        // Show the transcript + reply in the conversation log
-        setTurns((prev) => [
-          ...prev,
-          { role: 'user', text: result.transcript },
-          { role: 'hume', text: result.reply },
-        ])
+      setSessionId(result.sessionId)
+      setTurns((prev) => [
+        ...prev,
+        { role: 'user', text: result.transcript },
+        { role: 'hume', text: result.reply },
+      ])
 
-        // Revoke previous audio URL to free memory
-        if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current)
-        const url = URL.createObjectURL(result.audioBlob)
-        audioUrlRef.current = url
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current)
+      const url = URL.createObjectURL(result.audioBlob)
+      audioUrlRef.current = url
 
-        if (audioRef.current) {
-          audioRef.current.src = url
-          setOrbState('speaking')
-          audioRef.current.play().catch(() => {
-            // Autoplay blocked — still show speaking state briefly
-            toast('Tap the orb to play the audio response.', { icon: '🔊' })
-          })
-        }
-      } catch (err) {
-        setOrbState('idle')
-        const message = err instanceof Error ? err.message : 'Something went wrong'
-        toast.error(message)
+      if (audioRef.current) {
+        audioRef.current.src = url
+        setAppState('speaking')
+        audioRef.current.play().catch(() => {
+          toast('Tap the mic to play the audio response.', { icon: '🔊' })
+        })
       }
+    } catch (err) {
+      setAppState('idle')
+      const message = err instanceof Error ? err.message : 'Something went wrong'
+      toast.error(message)
     }
   }
 
   const handleAudioEnd = () => {
-    setOrbState('idle')
+    setAppState('idle')
+  }
+
+  const statusLabel: Record<AppState, string | null> = {
+    idle: null,
+    recording: null,  // AIVoiceInput shows "Listening..." itself
+    thinking: 'Thinking…',
+    speaking: 'Speaking…',
   }
 
   return (
     <div className="app">
+      <SparklesCore
+        id="app-sparkles"
+        background="transparent"
+        minSize={0.6}
+        maxSize={1.4}
+        particleDensity={80}
+        particleColor="#ffffff"
+        speed={1}
+        className="fixed inset-0 w-full h-full"
+      />
       <Toaster
         position="top-center"
         toastOptions={{
@@ -91,12 +108,22 @@ export default function App() {
       />
 
       <header className="app-header">
-        <h1 className="app-title">Ask Hume</h1>
-        <p className="app-subtitle">David Hume's philosophy. Paddy Pimblett's mouth.</p>
+        <h1 className="app-title">
+          David <GradientText className="bg-black text-white">Hume</GradientText>
+        </h1>
       </header>
 
       <main className="app-main">
-        <VoiceOrb state={orbState} onClick={handleOrbClick} />
+        <div style={{ pointerEvents: appState === 'thinking' || appState === 'speaking' ? 'none' : 'auto', opacity: appState === 'thinking' || appState === 'speaking' ? 0.5 : 1 }}>
+          <AIVoiceInput onStart={handleStart} onStop={handleStop} />
+        </div>
+
+        <p className="app-quote">"Beauty in things exists in the mind which contemplates them." </p> 
+        {/* <p className="app-quote">"Be a philosopher, but amidst all your philosophy be still a man" </p>  */}
+
+        {statusLabel[appState] && (
+          <p className="orb-label">{statusLabel[appState]}</p>
+        )}
 
         {turns.length > 0 && (
           <section className="transcript" aria-label="Conversation">
@@ -110,7 +137,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Hidden audio element — controlled programmatically */}
       <audio ref={audioRef} onEnded={handleAudioEnd} />
     </div>
   )

@@ -1,31 +1,31 @@
 """
-Speech-to-text via ElevenLabs Scribe.
+Speech-to-text via OpenAI Whisper.
 Accepts raw audio bytes, returns the transcribed text.
 """
 
-from elevenlabs.client import ElevenLabs
+import io
 
-from backend.config import ELEVENLABS_API_KEY
+from openai import OpenAI
+
+from backend.config import OPENAI_API_KEY
 
 
 def transcribe(audio_bytes: bytes, filename: str = "audio.webm") -> str:
     """
-    Send audio to ElevenLabs STT and return the transcript string.
+    Send audio to OpenAI Whisper and return the transcript string.
 
-    filename  — passed as the multipart filename so ElevenLabs can infer the
-                codec. The frontend should send webm (MediaRecorder default) or
-                mp3/wav. Adjust if you change the frontend recording format.
+    filename  — used to infer the codec. The frontend should send webm
+                (MediaRecorder default) or mp3/wav. Adjust if you change
+                the frontend recording format.
     """
-    if not ELEVENLABS_API_KEY:
-        raise RuntimeError("ELEVENLABS_API_KEY is not set")
+    client = OpenAI(api_key=OPENAI_API_KEY)
 
-    client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+    audio_file = io.BytesIO(audio_bytes)
+    audio_file.name = filename
 
-    # file param accepts a (filename, bytes, mime_type) tuple
-    mime = _mime_for(filename)
-    response = client.speech_to_text.convert(
-        file=(filename, audio_bytes, mime),
-        model_id="scribe_v1",
+    response = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file,
     )
 
     return response.text

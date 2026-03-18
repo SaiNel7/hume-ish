@@ -11,12 +11,12 @@ CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
 ANTHROPIC_API_KEY: str | None = os.getenv("ANTHROPIC_API_KEY")
 
 # Required for voice (phase 3) — validated at call time, not import time
-ELEVENLABS_API_KEY: str | None = os.getenv("ELEVENLABS_API_KEY")
-PADDY_VOICE_ID: str | None = os.getenv("PADDY_VOICE_ID")
+CARTESIA_API_KEY: str | None = os.getenv("CARTESIA_API_KEY")
+CARTESIA_VOICE_ID: str | None = os.getenv("CARTESIA_VOICE_ID")
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 LLM_MODEL = "claude-sonnet-4-6"
-TTS_MODEL = "eleven_turbo_v2_5"
+TTS_MODEL = "sonic-2"
 
 CHUNK_SIZE = 512       # tokens
 CHUNK_OVERLAP = 64     # tokens
