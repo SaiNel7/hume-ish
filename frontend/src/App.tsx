@@ -213,7 +213,7 @@ export default function App() {
         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       >
         <h1 className="app-title">
-          David <GradientText className="bg-black text-white">Hume</GradientText>
+          David <GradientText className="bg-black text-white">Hume</GradientText>-ish
         </h1>
         <div style={{ pointerEvents: micDisabled ? 'none' : 'auto', opacity: micDisabled ? 0.5 : 1 }}>
           <AIVoiceInput onStart={handleStart} onStop={handleStop} />
