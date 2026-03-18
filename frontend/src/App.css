@@ -3,13 +3,32 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  height: 100%;
+  min-height: 0;
 }
 
-/* ─── Header ─────────────────────────────────────────────────────────────── */
+/* idle: center everything vertically */
+.app--idle {
+  justify-content: center;
+}
 
-.app-header {
-  text-align: center;
+/* active: natural top-down flow */
+.app--active {
+  justify-content: flex-start;
+}
+
+/* ─── Top section ────────────────────────────────────────────────────────── */
+
+.app-top {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app--active .app-top {
+  padding-top: 2.5rem;
 }
 
 .app-title {
@@ -17,14 +36,6 @@
   font-weight: 400;
   letter-spacing: -0.03em;
   color: var(--text-primary);
-}
-
-.app-subtitle {
-  margin-top: 3rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-style: italic;
-  font-family: inherit;
 }
 
 /* ─── Quote ──────────────────────────────────────────────────────────────── */
@@ -54,13 +65,32 @@
   animation: shimmer 12s linear infinite;
 }
 
-/* ─── Main ───────────────────────────────────────────────────────────────── */
+/* ─── Chat scroll area ───────────────────────────────────────────────────── */
 
-.app-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+.chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.75rem 0 1.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.10) transparent;
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.24);
 }
 
 /* ─── Transcript ─────────────────────────────────────────────────────────── */
@@ -108,4 +138,14 @@
   font-size: 0.92rem;
   line-height: 1.65;
   color: var(--text-primary);
+}
+
+/* ─── Status label ───────────────────────────────────────────────────────── */
+
+.orb-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  font-style: italic;
+  height: 1rem;
 }
