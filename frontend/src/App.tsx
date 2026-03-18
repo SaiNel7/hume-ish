@@ -15,6 +15,82 @@ interface Turn {
 
 type AppState = 'idle' | 'recording' | 'thinking' | 'speaking'
 
+function CornerMenu() {
+  const [open, setOpen] = useState(false)
+
+  const links = [
+    {
+      href: 'https://sainellutla.com',
+      label: 'My page',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+      ),
+    },
+    {
+      href: 'https://plato.stanford.edu/entries/hume/',
+      label: 'Stanford Encyclopedia',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <div className="corner-menu">
+      <button
+        className="corner-menu__toggle"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={open ? 'Close menu' : 'Open menu'}
+      >
+        <motion.span
+          animate={{ rotate: open ? 225 : 45 }}
+          transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+          style={{ display: 'flex', transformOrigin: 'center' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <line x1="12" y1="2" x2="12" y2="22" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+          </svg>
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="corner-menu__items"
+            initial={{ opacity: 0, scale: 0.85, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: -6 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {links.map((link, i) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="corner-menu__item"
+                aria-label={link.label}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.07, duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              >
+                {link.icon}
+              </motion.a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export default function App() {
   const [appState, setAppState] = useState<AppState>('idle')
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -168,6 +244,7 @@ export default function App() {
       </AnimatePresence>
 
       <audio ref={audioRef} onEnded={handleAudioEnd} />
+      <CornerMenu />
     </div>
   )
 }
