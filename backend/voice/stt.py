@@ -29,14 +29,3 @@ def transcribe(audio_bytes: bytes, filename: str = "audio.webm") -> str:
     )
 
     return response.text
-
-
-def _mime_for(filename: str) -> str:
-    ext = filename.rsplit(".", 1)[-1].lower()
-    return {
-        "webm": "audio/webm",
-        "mp3":  "audio/mpeg",
-        "wav":  "audio/wav",
-        "ogg":  "audio/ogg",
-        "m4a":  "audio/mp4",
-    }.get(ext, "application/octet-stream")
