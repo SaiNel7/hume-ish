@@ -2,6 +2,12 @@
 
 A voice-first RAG chatbot that lets you converse with David Hume's philosophy. Ask questions via microphone; get answers in Hume's voice, grounded in his actual writings.
 
+# **Demo**
+
+
+https://github.com/user-attachments/assets/85f99498-20e5-41c6-902b-de50ee3c096f
+
+
 ## How it works
 
 1. **Ingestion** — Downloads public-domain Hume texts from Project Gutenberg, cleans them, chunks them, embeds via OpenAI, and stores in ChromaDB.
